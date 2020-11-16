@@ -7,6 +7,9 @@ import * as postsAPI from '../api/posts'; // api/posts 안의 함수 모두 불�
     3. 리듀서에서 액션에 따라 로딩중, 결과 ,에러 상태를 변경해주어야함
 */
 
+// 모듈 리팩토링
+import { createPromiseThunk, reducerUtils } from '../lib/asyncUtils';
+
 /* 액션타입 */
 
 // 포스트 여러개 조회하기
@@ -19,6 +22,7 @@ const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS'; 
 const GET_POST_ERROR = 'GET_POST_ERROR';
 
+/*
 // thunk를 사용 할 때, 꼭 모든 액션들에 대하여 액션 생성함수를 만들 필요는 없음
 // 그냥 thunk 함수에서 바로 액션 객체를 만들어주어도 괜찮음
 
@@ -56,61 +60,48 @@ const initialState = {
     }
 };
 
+*/
+ // 리펙토리를 사용한 thunk 함수
+ export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPOSTS);
+ export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
+
+// initialState도 initial() 함수를 사용하여 리팩토링
+const initialState = {
+    posts: reducerUtils.initial(),
+    post: reducerUtils.initial()
+}
+
 export default function posts(state = initialState, action) {
     switch (action.type) {
         case GET_POSTS:
             return {
                 ...state,
-                posts: {
-                    loading: true,
-                    data: null,
-                    error: null
-                }
+                posts: reducerUtils.loading()
             }
         case GET_POSTS_SUCCESS:
             return {
                 ...state,
-                posts: {
-                    loading: true,
-                    data: action.posts,
-                    error: null
-                }
+                posts: reducerUtils.success(action.payload)
             }
         case GET_POSTS_ERROR:
             return {
                 ...state,
-                posts: {
-                    loading: true,
-                    data: null,
-                    error: action.error
-                }
+                posts: reducerUtils.error(action.error)
             }
         case GET_POST:
             return {
                 ...state,
-                post: {
-                    loading: true,
-                    data: null,
-                    error: null
-                }
+                post: reducerUtils.loading()
             }
             case GET_POST_SUCCESS:
                 return {
                     ...state,
-                    post: {
-                        loading: true,
-                        data: action.post,
-                        error: null
-                    }
+                    post: reducerUtils.success(action.payload)
                 };
             case GET_POST_ERROR:
                 return {
                     ...state,
-                    post: {
-                        loading: true,
-                        data: null,
-                        error: action.error
-                    }
+                    post: reducerUtils.error(action.error)
                 };
             default:
                 return state;
