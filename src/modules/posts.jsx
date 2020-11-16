@@ -8,7 +8,7 @@ import * as postsAPI from '../api/posts'; // api/posts 안의 함수 모두 불�
 */
 
 // 모듈 리팩토링
-import { createPromiseThunk, reducerUtils } from '../lib/asyncUtils';
+import { createPromiseThunk, reducerUtils, handleAsyncActions } from '../lib/asyncUtils';
 
 /* 액션타입 */
 
@@ -62,7 +62,7 @@ const initialState = {
 
 */
  // 리펙토리를 사용한 thunk 함수
- export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPOSTS);
+ export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
  export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
 
 // initialState도 initial() 함수를 사용하여 리팩토링
@@ -74,36 +74,26 @@ const initialState = {
 export default function posts(state = initialState, action) {
     switch (action.type) {
         case GET_POSTS:
-            return {
-                ...state,
-                posts: reducerUtils.loading()
-            }
         case GET_POSTS_SUCCESS:
-            return {
-                ...state,
-                posts: reducerUtils.success(action.payload)
-            }
         case GET_POSTS_ERROR:
-            return {
-                ...state,
-                posts: reducerUtils.error(action.error)
-            }
+            return handleAsyncActions(GET_POSTS, 'posts')(state, action);
         case GET_POST:
-            return {
-                ...state,
-                post: reducerUtils.loading()
-            }
-            case GET_POST_SUCCESS:
-                return {
-                    ...state,
-                    post: reducerUtils.success(action.payload)
-                };
-            case GET_POST_ERROR:
-                return {
-                    ...state,
-                    post: reducerUtils.error(action.error)
-                };
-            default:
-                return state;
+        case GET_POST_SUCCESS:
+        case GET_POST_ERROR:
+            return handleAsyncActions(GET_POST, 'post')(state, action);
+        default:
+            return state;
     }
 }
+
+/* 
+    return handleAsyncActions(GET_POSTS, 'posts')(state, action); 는
+
+    const postsReducer = handleAsyncActions(GET_POSTS, 'posts');
+    return postsReducer(state, action);
+
+    과 같이 작성할 수 있다.
+
+
+
+*/
