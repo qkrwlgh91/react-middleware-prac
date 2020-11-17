@@ -9,8 +9,10 @@ function PostListContainer() {
 
     // 컴포넌트 마운트 후 포스트 목록 요청
     useEffect(() => {
+        // 재로딩을 막기위한 방법 1 data가 있으면 요청하지 않도록 if(data) return 추가
+        if (data) return;
         dispatch(getPosts());
-    }, [dispatch]);
+    },[data, dispatch]);
 
     if (loading) return <div>로딩 중 ...</div>
     if (error) return <div>에러 발생!</div>
