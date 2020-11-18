@@ -8,7 +8,7 @@ import * as postsAPI from '../api/posts'; // api/posts 안의 함수 모두 불�
 */
 
 // 모듈 리팩토링
-import { createPromiseThunk, reducerUtils, handleAsyncActions } from '../lib/asyncUtils';
+import { createPromiseThunk, reducerUtils, handleAsyncActions, createPromiseThunkById, handleAsyncActionsById } from '../lib/asyncUtils';
 
 /* 액션타입 */
 
@@ -21,6 +21,10 @@ const GET_POSTS_ERROR = 'GET_POSTS_ERROR'; // 요청 실패
 const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS'; 
 const GET_POST_ERROR = 'GET_POST_ERROR';
+
+// 포스트 비우기
+// 특정 포스트를 조회할때는 어떤 파라미터가 주어졌냐에 따라 결과물이 다르기 때문에 재로딩 문제를 해결하기 위한 첫번째 방법으로 포스트 내용을 비워주어야 한다.
+const CLEAR_POST = 'CLEAR_POST';
 
 /*
 // thunk를 사용 할 때, 꼭 모든 액션들에 대하여 액션 생성함수를 만들 필요는 없음
@@ -63,12 +67,15 @@ const initialState = {
 */
  // 리펙토리를 사용한 thunk 함수
  export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
- export const getPost = createPromiseThunk(GET_POST, postsAPI.getPostById);
+ export const getPost = createPromiseThunkById(GET_POST, postsAPI.getPostById);
+
+ // export const clearPost = () => ({ type: CLEAR_POST });
 
 // initialState도 initial() 함수를 사용하여 리팩토링
 const initialState = {
     posts: reducerUtils.initial(),
-    post: reducerUtils.initial()
+    //post: reducerUtils.initial()
+    post: {}
 }
 
 export default function posts(state = initialState, action) {
@@ -80,7 +87,12 @@ export default function posts(state = initialState, action) {
         case GET_POST:
         case GET_POST_SUCCESS:
         case GET_POST_ERROR:
-            return handleAsyncActions(GET_POST, 'post')(state, action);
+            return handleAsyncActionsById(GET_POST, 'post')(state, action);
+        // case CLEAR_POST:
+        //     return {
+        //         ...state,
+        //         post: reducerUtils.initial()
+        //     }
         default:
             return state;
     }
