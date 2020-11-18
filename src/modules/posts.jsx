@@ -87,7 +87,7 @@ export default function posts(state = initialState, action) {
         case GET_POST:
         case GET_POST_SUCCESS:
         case GET_POST_ERROR:
-            return handleAsyncActionsById(GET_POST, 'post')(state, action);
+            return handleAsyncActionsById(GET_POST, 'post', true)(state, action);
         // case CLEAR_POST:
         //     return {
         //         ...state,
