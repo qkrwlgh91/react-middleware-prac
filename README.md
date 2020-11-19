@@ -1,3 +1,28 @@
+# 가짜 API 서버 열기
+
+```
+
+프론트엔드 프로젝트에서 실무와 비슷한 느낌으로 하기위해 가짜API서버를 만들어 사용
+json-server라는 도구를 사용
+json파일로 연습용 서버 구성가능
+
+npx json-server ./data.json --port 4000
+을 이용하여 파일 기반 서버를 열수 있음
+
+json-server를 글로벌로 설피하고 싶은경우
+yarn gloabl add json-server
+json-server ./data.json --port 4000
+
+
+
+```
+
+
+
+
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

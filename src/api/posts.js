@@ -1,3 +1,5 @@
+/*
+
 // n 밀리세컨드동안 기다리는 프로미스를 만들어주는 함수
 const sleep = n => new Promise(resolve => setTimeout(resolve, n));
 
@@ -30,4 +32,18 @@ export const getPosts = async () => {
 export const getPostById = async id => {
     await sleep(500); // 0.5초 쉬고
     return posts.find(post => post.id === id); // id로 찾아서 반환
-};
+}
+*/
+
+// 실제 API요청
+import axios from 'axios';
+
+export const getPosts = async () => {
+    const response = await axios.get('http://localhost:4000/posts');
+    return response.data;
+}
+
+export const getPostById = async id => {
+    const response = await axios.get(`http://localhost:4000/posts/${id}`);
+    return response.data;
+}
