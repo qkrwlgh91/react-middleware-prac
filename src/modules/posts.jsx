@@ -105,7 +105,12 @@ export default function posts(state = initialState, action) {
     return postsReducer(state, action);
 
     과 같이 작성할 수 있다.
-
-
-
 */
+
+// 홈화면으로 이동하는 Thunk
+// 3번째 인자를 사용하면 index.js의 withExtraArgument에서 넣어준 값들을 사용할 수 있음
+// containers/PostContainer.jsx에서 아래 함수를 dispatch
+// 현재는 단순히 바로 홈으로 이동하게끔 함수를 작성했지만, getState()를 사용하여 현재 리덕스 스토어의 상태를 확인하여 조건부로 이동을 하거나, 특정 API를 호출하여 성공했을 시에만 이동하는 방식으로 구현할 수 있다.
+export const goToHome = () => ( dispatch, getState, { history }) => {
+    history.push('/');
+}
