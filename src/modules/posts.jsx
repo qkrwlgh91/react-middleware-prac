@@ -10,6 +10,9 @@ import * as postsAPI from '../api/posts'; // api/posts 안의 함수 모두 불�
 // 모듈 리팩토링
 import { createPromiseThunk, reducerUtils, handleAsyncActions, createPromiseThunkById, handleAsyncActionsById } from '../lib/asyncUtils';
 
+// redux-saga
+import { call, put, takeEvery } from 'redux-saga/effects';
+
 /* 액션타입 */
 
 // 포스트 여러개 조회하기
@@ -65,6 +68,8 @@ const initialState = {
 };
 
 */
+
+/*
  // 리펙토리를 사용한 thunk 함수
  export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
  export const getPost = createPromiseThunkById(GET_POST, postsAPI.getPostById);
@@ -76,6 +81,65 @@ const initialState = {
     posts: reducerUtils.initial(),
     //post: reducerUtils.initial()
     post: {}
+}
+*/
+
+// redux-saga 사용
+/*
+    redux-thunk를 사용할때는 thunk함수를 사용해야 했지만 redux-saga를 사용하면 순수 액션 객체를 반환하는 액션 생성함수로 구현할 수 있다.
+    
+*/
+
+export const getPosts = () => ({ type: GET_POSTS });
+// payload는 파라미터 용도, meta는 리듀서에서 id를 알기위한 용도
+export const getPost = id => ({ type: GET_POST, payload: id, meta: id });
+
+function* getPostsSaga() {
+    try {
+        const posts = yield call(postsAPI.getPosts); // call을 사용하면 특정 함수를 호출하고, 결과물이 반환될 때까지 기다려 줄 수 있음
+        yield put({
+            type: GET_POSTS_SUCCESS,
+            payload: posts
+        }); // 성공 액션 디스패치
+    } catch (e) {
+        yield put({
+            type: GET_POSTS_ERROR,
+            error: true,
+            paylaod: e
+        }); // 실패 액션 디스패치
+    }
+}
+
+// 액션이 지니고 있는 값을 조회하고 싶다면 action을 파라미터로 받아와서 사용
+function* getPostSaga(action) {
+    const param = action.payload;
+    const id = action.meta;
+    try {
+        const post = yield call(postsAPI.getPostById, param); // API 함수에 넣어주고 싶은 인자는 call 함수의 두번째 인자부터 순서대로 넣어주면 됨
+        yield put({
+            type: GET_POST_SUCCESS,
+            payload: post,
+            meta: id
+        })
+    } catch (e) {
+        yield put({
+            type: GET_POST_ERROR,
+            error: true,
+            payload: e,
+            meta: id
+        })
+    }
+}
+
+// 사가들을 합치기
+export function* postsSaga() {
+    yield takeEvery(GET_POSTS, getPostsSaga);
+    yield takeEvery(GET_POST, getPostSaga);
+}
+
+const initialState = {
+    posts: reducerUtils.initial(),
+    post: reducerUtils.initial()
 }
 
 export default function posts(state = initialState, action) {
