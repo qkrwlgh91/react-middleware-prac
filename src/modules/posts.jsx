@@ -8,7 +8,15 @@ import * as postsAPI from '../api/posts'; // api/posts 안의 함수 모두 불�
 */
 
 // 모듈 리팩토링
-import { createPromiseThunk, reducerUtils, handleAsyncActions, createPromiseThunkById, handleAsyncActionsById } from '../lib/asyncUtils';
+import { 
+    createPromiseThunk, 
+    reducerUtils, 
+    handleAsyncActions, 
+    createPromiseThunkById, 
+    handleAsyncActionsById,
+    createPromiseSaga,
+    createPromiseSagaById
+} from '../lib/asyncUtils';
 
 // redux-saga
 import { call, put, takeEvery } from 'redux-saga/effects';
@@ -87,13 +95,19 @@ const initialState = {
 // redux-saga 사용
 /*
     redux-thunk를 사용할때는 thunk함수를 사용해야 했지만 redux-saga를 사용하면 순수 액션 객체를 반환하는 액션 생성함수로 구현할 수 있다.
-    
+    액션을 모니터링해서 특정 액션이 발생했을 때 호출할 사가 함수에서는 파라미터로 해당 액션을 받아올 수 있음
+    그렇기 때문에 getPostSaga의 경우 액션을 파라미터로 받아와 해당 액션의 id값을 참조할 수 있음
+    예 )
+    dispatch({ type: GET_POST, payload: 1, meta: 1}) 이란 코드가 실행되면,
+    액션에서 action.payload 값을 추출하여 API를 호출 할 때 인자로 넣어서 호출
+    meta는 handleAsynActionById를 호환하기 위함으로 사용하지 않는다면 meta를 생략해도 됨
 */
 
 export const getPosts = () => ({ type: GET_POSTS });
 // payload는 파라미터 용도, meta는 리듀서에서 id를 알기위한 용도
 export const getPost = id => ({ type: GET_POST, payload: id, meta: id });
 
+/*
 function* getPostsSaga() {
     try {
         const posts = yield call(postsAPI.getPosts); // call을 사용하면 특정 함수를 호출하고, 결과물이 반환될 때까지 기다려 줄 수 있음
@@ -130,6 +144,10 @@ function* getPostSaga(action) {
         })
     }
 }
+*/
+
+const getPostsSaga = createPromiseSaga(GET_POSTS, postsAPI.getPosts);
+const getPostSaga = createPromiseSagaById(GET_POST, postsAPI.getPostById);
 
 // 사가들을 합치기
 export function* postsSaga() {

@@ -1,4 +1,5 @@
 // Promise에 기반한 Thunk를 만들어 주는 함수
+/*
 export const createPromiseThunk = (type, promiseCreator) => {
     const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
 
@@ -19,6 +20,47 @@ export const createPromiseThunk = (type, promiseCreator) => {
     }
 
 };
+*/
+// 사가를 통해서 비동기 작업을 처리 할 때에는 API함수의 인자는 액션에서부터 참조한다.
+// 액션 객체에서 사용할 함수의 인자의 이름은 payload로 통일
+// 특정 id를 위한 비동기작업을 처리하는 creatrPromiseSagaByID와 handleAsyncActionsByID 에서는 id 값을 action.meta 에서 참조
+
+import { call, put } from 'redux-saga/effects';
+
+// 복잡하고 까다로운 사가 함수를 만들게 될 때에는 사가 함수 안에서 여러 종류의 비동기 작업을 할수 있다.
+// 하지만 단순히 하나의 API를 요청해서 결과물을 가지고 액션을 디스패치 하는 일이 꽤나 많은데 이것의 로직을 함수화하여 재사용하면 깔끔한 코드로 작성가능
+// createPromiseSaga, createPromiseSagaById
+
+// 프로미스를 기다렸다가 결과를 디스패치하는 사가
+export const createPromiseSaga = (type, promiseCreator) => {
+    const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+    return function* saga(action) {
+        try {
+            //  재사용성을 위하여 promiseCreator의 파라미터엔 action.payload 값을 넣도록 설정
+            const payload = yield call(promiseCreator, action.payload);
+            yield put({ type: SUCCESS, payload });
+        } catch (e) {
+            yield put({ type: ERROR, error: true, payload: e });
+        }
+    }
+};
+
+// 특정 id의 데이터를 조회하는 용도로 사용하는 사가
+// API를 호출 할 때 파라미터는 action.payload 를 넣고,
+// id 값을 action.meta 로 설정
+export const createPromiseSagaById = (type, promiseCreator) => {
+    const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+    return function* saga(action) {
+        const id = action.meta;
+        try {
+            const payload = yield call(promiseCreator, action.payload);
+            yield put({ type: SUCCESS, payload, meta: id });
+        } catch (e) {
+            yield put({ type: ERROR, error: e, meta: id });
+        }
+    }
+}
+
 
 // 리듀서에서 사용 할 수 있는 여러 유틸 함수
 export const reducerUtils = {
@@ -81,7 +123,7 @@ export const handleAsyncActions = (type, key, keepData = false) => {
 
 // 한페이지의 특정 포스트를 조회할때 재로딩을 방지하려면 asyncUtils에 만든 여러 함수를 커스터마이징 해야하므로, 기존 함수를 수정하는 대신 새로운 함수 작성
 // 비동기 작업에 관련된 액션이 어떤 id를 가르키는지 확인하기위해 action.meta 값에 id를 넣어주어야 한다.
-
+/*
 // 특정 id를 처리하는 Thunk 생성함수
 const defaultIdSelector = param => param;
 export const createPromiseThunkById = (
@@ -106,6 +148,7 @@ export const createPromiseThunkById = (
         }
     };
 };
+*/
 
 // id 별로 처리하는 유틸함수
 export const handleAsyncActionsById = (type, key, keepData = false) => {
