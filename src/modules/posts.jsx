@@ -19,7 +19,7 @@ import {
 } from '../lib/asyncUtils';
 
 // redux-saga
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery, getContext } from 'redux-saga/effects';
 
 /* 액션타입 */
 
@@ -32,6 +32,7 @@ const GET_POSTS_ERROR = 'GET_POSTS_ERROR'; // 요청 실패
 const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS'; 
 const GET_POST_ERROR = 'GET_POST_ERROR';
+const GO_TO_HOME = 'GO_TO_HOME';
 
 // 포스트 비우기
 // 특정 포스트를 조회할때는 어떤 파라미터가 주어졌냐에 따라 결과물이 다르기 때문에 재로딩 문제를 해결하기 위한 첫번째 방법으로 포스트 내용을 비워주어야 한다.
@@ -106,6 +107,7 @@ const initialState = {
 export const getPosts = () => ({ type: GET_POSTS });
 // payload는 파라미터 용도, meta는 리듀서에서 id를 알기위한 용도
 export const getPost = id => ({ type: GET_POST, payload: id, meta: id });
+export const goToHome = () => ({ type: GO_TO_HOME });
 
 /*
 function* getPostsSaga() {
@@ -148,11 +150,16 @@ function* getPostSaga(action) {
 
 const getPostsSaga = createPromiseSaga(GET_POSTS, postsAPI.getPosts);
 const getPostSaga = createPromiseSagaById(GET_POST, postsAPI.getPostById);
+function* goToHomeSaga() {
+    const history = yield getContext('history');
+    history.push('/');
+}
 
 // 사가들을 합치기
 export function* postsSaga() {
     yield takeEvery(GET_POSTS, getPostsSaga);
     yield takeEvery(GET_POST, getPostSaga);
+    yield takeEvery(GO_TO_HOME, goToHomeSaga);
 }
 
 const initialState = {
@@ -189,6 +196,7 @@ export default function posts(state = initialState, action) {
     과 같이 작성할 수 있다.
 */
 
+/*
 // 홈화면으로 이동하는 Thunk
 // 3번째 인자를 사용하면 index.js의 withExtraArgument에서 넣어준 값들을 사용할 수 있음
 // containers/PostContainer.jsx에서 아래 함수를 dispatch
@@ -196,3 +204,4 @@ export default function posts(state = initialState, action) {
 export const goToHome = () => ( dispatch, getState, { history }) => {
     history.push('/');
 }
+*/
