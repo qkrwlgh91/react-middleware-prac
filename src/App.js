@@ -5,6 +5,7 @@ import { Route } from 'react-router-dom';
 import PostListPage from './pages/PostListPage';
 import PostPage from './pages/PostPage';
 import InterviewListPage from './pages/InterviewListPage';
+import InterviewPage from './pages/InterviewPage';
 
 function App() {
   return (
@@ -12,7 +13,8 @@ function App() {
       <CounterContainer />
       <Route path="/" component={PostListPage} exact={true} />
       <Route path="/:id" component={PostPage} />
-      <Route path="/interviews" component={InterviewListPage} />
+      <Route path="/interviews" component={InterviewListPage} exact={true}/>
+      <Route path="/interviews/:id" component={InterviewPage} />
     </>
   )
 }
