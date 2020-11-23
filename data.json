@@ -15,24 +15,32 @@
       "title": "redux-saga도 사용해봅시다",
       "body": "나중엔 redux-saga를 사용해서 비동기 작업을 처리하는 방법도 배워볼거에요"
     },
-    [
+    {
+    "id": 4,
+    "title": "postman using",
+    "body": "포스트맨이 들어갈까요?"
+    },
+    {
+    "id": 5,
+    "title": "postman using",
+    "body": "포스트맨이 들어갈까요?"
+    }
+  ],
+  "interviews": [
       {
-        "id": 4,
-        "title": "postman using",
-        "body": "포스트맨이 들어갈까요?"
-      }
-    ],
-    [
-      {
-        "id": 4,
-        "title": "postman using",
-        "body": "포스트맨이 들어갈까요?"
+          "id": 1,
+          "title": "Tell us about yourself",
+          "answer": "I am genius"
       },
       {
-        "id": 5,
-        "title": "나쁜뇬",
-        "body": "어찌혼내주지?"
-      }
-    ]
+        "id": 2,
+        "title": "Why would you like to work with us?",
+        "answer": "I am genius"
+    },
+    {
+        "id": 3,
+        "title": "What are your major weaknesses and what are your strengths?",
+        "answer": "I am genius"
+    }
   ]
 }
