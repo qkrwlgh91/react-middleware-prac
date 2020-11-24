@@ -23,17 +23,24 @@ const GET_INTERVIEWS_ERROR = 'GET_INTERVIEWS_ERROR'; // 요청 실패
 const GET_INTERVIEW = 'GET_INTERVIEW';
 const GET_INTERVIEW_SUCCESS = 'GET_INTERVIEW_SUCCESS';
 const GET_INTERVIEW_ERROR = 'GET_INTERVIEW_ERROR';
+const GO_TO_HOME = 'GO_TO_HOME';
 
 export const getInterviews = () => ({ type: GET_INTERVIEWS });
 export const getInterview = id => ({ type: GET_INTERVIEW, payload: id, meta: id });
+export const goToHome = () => ({ type: GO_TO_HOME });
 
 const getInterviewsSaga = createPromiseSaga(GET_INTERVIEWS, interviewsAPI.getInterviews);
 const getInterviewSaga = createPromiseSagaById(GET_INTERVIEW, interviewsAPI.getInterviewById);
+function* goToHomeSaga() {
+    const history = yield getContext('history');
+    history.push('/interviews');
+}
 
 // saga 합치기
 export function* interviewsSaga() {
     yield takeEvery(GET_INTERVIEWS, getInterviewsSaga);
     yield takeEvery(GET_INTERVIEW, getInterviewSaga);
+    yield takeEvery(GO_TO_HOME, goToHomeSaga)
 };
 
 const initialState = {

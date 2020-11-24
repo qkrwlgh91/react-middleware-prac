@@ -6,7 +6,7 @@ function InterviewList({ interviews }) {
         <ul>
             {interviews.map(interview => (
                 <li key={interview.id}>
-                    <Link to={`/${interview.id}`}>{interview.title}</Link>
+                    <Link to={`/interviews/${interview.id}`}>{interview.title}</Link>
                 </li>
             ))}
         </ul>
